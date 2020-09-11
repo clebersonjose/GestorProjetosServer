@@ -5,6 +5,16 @@ export async function up(knex: Knex) {
     table.increments("taskCode").primary();
     table.string("name").notNullable();
     table.string("content");
+
+    table
+      .integer("column")
+      .notNullable()
+      .references("columnCode")
+      .inTable("columns")
+      .onUpdate("CASCADE")
+      .onDelete("CASCADE");
+
+    table.float("position").notNullable();
   });
 }
 
