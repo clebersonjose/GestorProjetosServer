@@ -8,7 +8,25 @@ interface ColumnInterface {
 }
 
 export default class BoardsController {
-  async index(request: Request, response: Response) {}
+  async index(request: Request, response: Response) {
+    const columns = await db("columns")
+      .whereExists(function () {
+        this.select("columns.*")
+          .from("columns")
+          .whereRaw("`columns`.`columnCode`=`columnCode`")
+          .whereRaw("`columns`.`name`=`name`")
+          .whereRaw("`columns`.`position`=`position`");
+      })
+      .then((data) => {
+        return response.status(200).json(data);
+      })
+      .catch(() => {
+        return response.status(400).json({
+          error: "Unexpected error while getting the columns",
+        });
+      });
+    return columns;
+  }
 
   async createColumn(request: Request, response: Response) {
     const { name, position } = request.body;
