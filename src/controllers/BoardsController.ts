@@ -1,12 +1,5 @@
 import { Request, Response } from "express";
 import db from "../database/connection";
-
-interface ColumnInterface {
-  columnCode: number;
-  name: string;
-  position: number;
-}
-
 export default class BoardsController {
   async index(request: Request, response: Response) {
     const columns = await db("columns")
