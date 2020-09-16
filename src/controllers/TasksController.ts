@@ -23,7 +23,7 @@ export default class TasksController {
       });
   }
   async createTask(request: Request, response: Response) {
-    const { taskCode, name, content, column, position } = request.body;
+    const { name, content, column, position } = request.body;
     const trx = await db.transaction();
 
     try {
@@ -44,6 +44,25 @@ export default class TasksController {
       });
     }
   }
-  async editTask(request: Request, response: Response) {}
+  async editTask(request: Request, response: Response) {
+    const { taskCode, name, content, column, position } = request.body;
+    const trx = await db.transaction();
+
+    try {
+      await trx("tasks").where({ taskCode }).update({
+        name,
+        content,
+        column,
+        position,
+      });
+      await trx.commit();
+      return response.status(201).send();
+    } catch (err) {
+      await trx.rollback();
+      return response.status(400).json({
+        error: "Unexpected error while updating the task",
+      });
+    }
+  }
   async deleteTask(request: Request, response: Response) {}
 }
