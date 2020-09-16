@@ -2,7 +2,26 @@ import { Request, Response } from "express";
 import db from "../database/connection";
 
 export default class TasksController {
-  async index(request: Request, response: Response) {}
+  async index(request: Request, response: Response) {
+    const tasks = await db("tasks")
+      .whereExists(function () {
+        this.select("tasks.*")
+          .from("tasks")
+          .whereRaw("`tasks`.`taskCode`=`taskCode`")
+          .whereRaw("`tasks`.`name`=`name`")
+          .whereRaw("`tasks`.`content`=`content`")
+          .whereRaw("`tasks`.`column`=`column`")
+          .whereRaw("`tasks`.`position`=`position`");
+      })
+      .then((data) => {
+        return response.status(200).json(data);
+      })
+      .catch(() => {
+        return response.status(400).json({
+          error: "Unexpected error while getting the tasks",
+        });
+      });
+  }
   async createTask(request: Request, response: Response) {
     const { taskCode, name, content, column, position } = request.body;
     const trx = await db.transaction();
