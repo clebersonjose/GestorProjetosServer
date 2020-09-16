@@ -11,6 +11,7 @@ routes.post("/boards", boardsController.createColumn);
 
 routes.get("/columns", columnsController.index);
 routes.post("/columns", columnsController.createTasks);
+routes.put("/columns", columnsController.editColumn);
 routes.delete("/columns", columnsController.deleteColumn);
 
 export default routes;
