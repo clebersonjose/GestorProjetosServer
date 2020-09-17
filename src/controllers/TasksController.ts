@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import db from "../database/connection";
+import { send } from "process";
 
 export default class TasksController {
   async index(request: Request, response: Response) {
@@ -64,5 +65,19 @@ export default class TasksController {
       });
     }
   }
-  async deleteTask(request: Request, response: Response) {}
+  async deleteTask(request: Request, response: Response) {
+    const { taskCode } = request.body;
+    const trx = await db.transaction();
+
+    try {
+      await trx("tasks").where({ taskCode }).del();
+      await trx.commit();
+      return response.status(201).send();
+    } catch (err) {
+      await trx.rollback();
+      return response.status(400).json({
+        error: "Unexpected error while deleting the task",
+      });
+    }
+  }
 }
