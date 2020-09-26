@@ -1,7 +1,9 @@
 import knex from 'knex';
 import path from 'path';
 
-require('dotenv/config');
+require('dotenv').config({
+  path: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
+});
 
 const db = knex({
   client: process.env.DB_CLIENT,
