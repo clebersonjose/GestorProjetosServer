@@ -5,13 +5,7 @@ export default class TasksController {
   index = async (request: Request, response: Response) => {
     const tasks = await db('tasks')
       .whereExists(function () {
-        this.select('tasks.*')
-          .from('tasks')
-          .whereRaw('`tasks`.`taskCode`=`taskCode`')
-          .whereRaw('`tasks`.`name`=`name`')
-          .whereRaw('`tasks`.`content`=`content`')
-          .whereRaw('`tasks`.`column`=`column`')
-          .whereRaw('`tasks`.`position`=`position`');
+        this.select('tasks.*').from('tasks');
       })
       .then((data) => response.status(200).json(data))
       .catch(() => {

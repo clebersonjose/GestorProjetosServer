@@ -5,11 +5,7 @@ export default class ColumnsController {
   index = async (request: Request, response: Response) => {
     const columns = await db('columns')
       .whereExists(function () {
-        this.select('columns.*')
-          .from('columns')
-          .whereRaw('`columns`.`columnCode`=`columnCode`')
-          .whereRaw('`columns`.`name`=`name`')
-          .whereRaw('`columns`.`position`=`position`');
+        this.select('*').from('columns');
       })
       .then((data) => response.status(200).json(data))
       .catch(() => {
