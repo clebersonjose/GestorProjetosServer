@@ -35,6 +35,8 @@
     "eslint-plugin-putout": "^5.1.1",
     "jest": "^26.4.2",
     "prettier": "^2.1.2",
+    "supertest": "^5.0.0",
+    "ts-jest": "^26.4.0",
     "ts-node-dev": "^1.0.0-pre.62",
     "typescript": "^4.0.2"
   }
