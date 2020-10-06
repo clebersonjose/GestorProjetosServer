@@ -45,8 +45,26 @@ describe("Tests from columns's controller", () => {
     const getColumn = await request.get('/columns');
 
     const response = await JSON.parse(getColumn.text);
-    
+
     expect(response[0].name).toBe('Otest');
+    done();
+  });
+
+  it('Delete column', async (done) => {
+    const create = await request.post('/columns').send({
+      name: 'test',
+      position: 1,
+    });
+
+    const del = await request.delete('/columns').send({
+      columnCode: 1
+    });
+
+    const getColumn = await request.get('/columns');
+
+    const response = await JSON.parse(getColumn.text);
+    
+    expect(response[0]).toBe(undefined);
     done();
   });
 });
