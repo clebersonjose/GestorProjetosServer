@@ -15,4 +15,20 @@ describe("Tests from tasks's controller", () => {
     expect(response.status).toBe(200);
     done();
   });
+
+  it('Create task', async (done) => {
+    const create = await request.post('/tasks').send({
+      name: 'test',
+      content: 'text do test',
+      column: 1,
+      position: 1,
+    });
+
+    const getTask = await request.get('/tasks');
+
+    const response = await JSON.parse(getTask.text);
+
+    expect(response[0].name).toBe('test');
+    done();
+  });
 });
