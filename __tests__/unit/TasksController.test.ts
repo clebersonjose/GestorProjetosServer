@@ -55,4 +55,24 @@ describe("Tests from tasks's controller", () => {
     expect(response[0].name).toBe('New name');
     done();
   });
+
+  it('Delete task', async (done) => {
+    const create = await request.post('/tasks').send({
+      name: 'test',
+      content: 'text',
+      column: 1,
+      position: 1,
+    });
+
+    const del = await request.delete('/tasks').send({
+      taskCode: 1,
+    });
+
+    const getTask = await request.get('/tasks');
+
+    const response = await JSON.parse(getTask.text);
+
+    expect(response[0]).toBe(undefined);
+    done();
+  });
 });
