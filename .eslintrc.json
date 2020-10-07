@@ -1,0 +1,41 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["plugin:putout/recommended", "airbnb-base"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": ["prettier", "@typescript-eslint", "putout"],
+  "rules": {
+    "putout/putout": "error",
+    "putout/single-property-destructuring": "error",
+    "putout/multiple-properties-destructuring": "error",
+    "putout/long-properties-destructuring": "error",
+    "putout/destructuring-as-function-argument": "error",
+    "putout/align-spaces": "error",
+    "putout/newline-function-call-arguments": "error",
+    "putout/function-declaration-paren-newline": "error",
+    "putout/remove-newline-after-default-import": "error",
+    "prettier/prettier": "error",
+    "global-require": "off",
+    "import/prefer-default-export": "off",
+    "import/extensions": "off",
+    "no-unused-expressions": [
+      "error",
+      {
+        "allowTaggedTemplates": true
+      }
+    ]
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}
