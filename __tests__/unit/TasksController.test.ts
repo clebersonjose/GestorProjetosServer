@@ -19,7 +19,7 @@ describe("Tests from tasks's controller", () => {
   it('Create task', async (done) => {
     const create = await request.post('/tasks').send({
       name: 'test',
-      content: 'text do test',
+      content: 'text',
       column: 1,
       position: 1,
     });
@@ -29,6 +29,30 @@ describe("Tests from tasks's controller", () => {
     const response = await JSON.parse(getTask.text);
 
     expect(response[0].name).toBe('test');
+    done();
+  });
+
+  it('Edit task', async (done) => {
+    const create = await request.post('/tasks').send({
+      name: 'test',
+      content: 'text',
+      column: 1,
+      position: 1,
+    });
+
+    const edit = await request.put('/tasks').send({
+      taskCode: 1,
+      name: 'New name',
+      content: 'text',
+      column: 1,
+      position: 1,
+    });
+
+    const getTask = await request.get('/tasks');
+
+    const response = await JSON.parse(getTask.text);
+
+    expect(response[0].name).toBe('New name');
     done();
   });
 });
