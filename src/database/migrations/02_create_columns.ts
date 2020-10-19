@@ -2,9 +2,9 @@ import Knex from 'knex';
 
 export async function up(knex: Knex) {
   return knex.schema.createTable('columns', (table) => {
-    table.increments('columnCode').primary();
+    table.increments('id').primary();
     table.string('name').notNullable();
-    table.float('position').notNullable();
+    table.integer('position').notNullable();
   });
 }
 
