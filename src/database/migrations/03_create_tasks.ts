@@ -12,13 +12,7 @@ export async function up(knex: Knex) {
       .onUpdate('CASCADE')
       .onDelete('CASCADE');
 
-    table
-      .integer('userId')
-      .notNullable()
-      .references('id')
-      .inTable('users')
-      .onUpdate('CASCADE')
-      .onDelete('CASCADE');
+    //table.integer('userId').notNullable().references('id').inTable('users').onUpdate('CASCADE').onDelete('CASCADE');
 
     table.string('name').notNullable();
     table.string('content');
