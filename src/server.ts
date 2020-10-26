@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json());
 app.use(routes);
 
-app.listen(() => {
-  process.env.NODE_ENV === 'test' ? '' : 3333;
-});
+const port = process.env.NODE_ENV === 'test' ? 0 : 3333;
+
+app.listen(port);
 
 export default app;

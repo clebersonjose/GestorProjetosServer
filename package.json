@@ -9,7 +9,7 @@
     "prestart": "yarn knex:migrate",
     "start": "tsnd --transpile-only --ignore-watch node_modules --respawn src/server.ts",
     "pretest": "NODE_ENV=test knex --knexfile knexfile.ts migrate:latest",
-    "test": "NODE_ENV=test jest "
+    "test": "NODE_ENV=test jest"
   },
   "author": "Cleberson Jose de Andrade",
   "license": "MIT",
