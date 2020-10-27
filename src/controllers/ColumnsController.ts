@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../database/connection';
 import * as Yup from 'yup';
+import Column from '../models/Column';
+import ColumnsView from '../views/ColumnsView';
 
 export default class ColumnsController {
   index = async (request: Request, response: Response) => {
@@ -8,7 +10,7 @@ export default class ColumnsController {
       .whereExists(function () {
         this.select('columns.*').from('columns');
       })
-      .then((data) => response.status(200).json(data))
+      .then((data) => response.status(200).json(ColumnsView.renderMany(data)))
       .catch(() => {
         response
           .status(400)
@@ -23,7 +25,7 @@ export default class ColumnsController {
 
     const column = await db('columns')
       .where({ id })
-      .then((data) => response.status(200).json(data))
+      .then((data) => response.status(200).json(ColumnsView.renderMany(data)))
       .catch(() => {
         response
           .status(400)
@@ -66,7 +68,7 @@ export default class ColumnsController {
     const { id, name, position } = request.body;
     const trx = await db.transaction();
 
-    const data = {
+    const data: Column = {
       id,
       name,
       position,
