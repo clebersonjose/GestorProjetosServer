@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../database/connection';
 import * as Yup from 'yup';
+import Task from '../models/Task';
+import TasksView from '../views/TasksView';
 
 export default class TasksController {
   index = async (request: Request, response: Response) => {
@@ -8,7 +10,7 @@ export default class TasksController {
       .whereExists(function () {
         this.select('tasks.*').from('tasks');
       })
-      .then((data) => response.status(200).json(data))
+      .then((data) => response.status(200).json(TasksView.renderMany(data)))
       .catch(() => {
         response
           .status(400)
@@ -22,7 +24,7 @@ export default class TasksController {
 
     const column = await db('tasks')
       .where({ id })
-      .then((data) => response.status(200).json(data))
+      .then((data) => response.status(200).json(TasksView.renderMany(data)))
       .catch(() => {
         response
           .status(400)
@@ -107,7 +109,7 @@ export default class TasksController {
     } = request.body;
     const trx = await db.transaction();
 
-    const data = {
+    const data: Task = {
       id,
       columnId,
       userId,

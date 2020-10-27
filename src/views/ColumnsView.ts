@@ -8,6 +8,7 @@ export default {
       position: column.position,
     };
   },
+
   renderMany(columns: Column[]) {
     return columns.map((column) => this.render(column));
   },
