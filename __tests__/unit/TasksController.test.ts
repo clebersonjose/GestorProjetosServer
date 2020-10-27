@@ -22,7 +22,6 @@ describe("Tests from tasks's controller", () => {
     //Mostrar tarefa
     const create = await request.post('/tasks').send({
       columnId: 1,
-      userId: null,
       name: 'test',
       content: 'text',
       position: 1,
@@ -44,7 +43,6 @@ describe("Tests from tasks's controller", () => {
     //Criar uma tarefa
     const create = await request.post('/tasks').send({
       columnId: 1,
-      userId: null,
       name: 'test',
       content: 'text',
       position: 1,
@@ -65,7 +63,6 @@ describe("Tests from tasks's controller", () => {
     //Editar tarefa
     const create = await request.post('/tasks').send({
       columnId: 1,
-      userId: null,
       name: 'test',
       content: 'text',
       position: 1,
@@ -78,7 +75,6 @@ describe("Tests from tasks's controller", () => {
     const edit = await request.put('/tasks').send({
       id: 1,
       columnId: 1,
-      userId: null,
       name: 'New name',
       content: 'text',
       position: 1,
@@ -100,7 +96,6 @@ describe("Tests from tasks's controller", () => {
     //Deletar tarefa
     const create = await request.post('/tasks').send({
       columnId: 1,
-      userId: null,
       name: 'test',
       content: 'text',
       position: 1,
