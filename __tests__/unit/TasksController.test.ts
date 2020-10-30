@@ -8,6 +8,7 @@ describe("Tests from tasks's controller", () => {
   //Testes do controller de tarefas
   afterEach(async () => {
     await db('tasks').truncate();
+    jest.setTimeout(30000);
   });
 
   it('Get tasks', async (done) => {

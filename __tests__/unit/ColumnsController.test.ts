@@ -8,6 +8,7 @@ describe("Tests from columns's controller", () => {
   //Testes do controller de colunas
   afterEach(async () => {
     await db('columns').truncate();
+    jest.setTimeout(30000);
   });
 
   it('Get all columns', async (done) => {
