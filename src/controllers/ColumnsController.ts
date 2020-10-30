@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
 import db from '../database/connection';
+import * as Yup from 'yup';
+import Column from '../models/Column';
+import ColumnsView from '../views/ColumnsView';
 
 export default class ColumnsController {
   index = async (request: Request, response: Response) => {
@@ -7,7 +10,7 @@ export default class ColumnsController {
       .whereExists(function () {
         this.select('columns.*').from('columns');
       })
-      .then((data) => response.status(200).json(data))
+      .then((data) => response.status(200).json(ColumnsView.renderMany(data)))
       .catch(() => {
         response
           .status(400)
@@ -17,9 +20,36 @@ export default class ColumnsController {
     return columns;
   };
 
+  show = async (request: Request, response: Response) => {
+    const { id } = request.params;
+
+    const column = await db('columns')
+      .where({ id })
+      .then((data) => response.status(200).json(ColumnsView.renderMany(data)))
+      .catch(() => {
+        response
+          .status(400)
+          .json({ error: 'Unexpected error while getting the column' });
+      });
+
+    return column;
+  };
+
   createColumn = async (request: Request, response: Response) => {
     const { name, position } = request.body;
     const trx = await db.transaction();
+
+    const data = {
+      name,
+      position,
+    };
+
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+      position: Yup.number().required(),
+    });
+
+    await schema.validate(data, { abortEarly: false });
 
     try {
       await trx('columns').insert({
@@ -31,19 +61,29 @@ export default class ColumnsController {
       return response.status(201).send();
     } catch (err) {
       await trx.rollback();
-
-      return response.status(400).json({
-        error: 'Unexpected error while creating new column',
-      });
     }
   };
 
   editColumn = async (request: Request, response: Response) => {
-    const { columnCode, name, position } = request.body;
+    const { id, name, position } = request.body;
     const trx = await db.transaction();
 
+    const data: Column = {
+      id,
+      name,
+      position,
+    };
+
+    const schema = Yup.object().shape({
+      id: Yup.number().required(),
+      name: Yup.string().required(),
+      position: Yup.number().required(),
+    });
+
+    await schema.validate(data, { abortEarly: false });
+
     try {
-      await trx('columns').where({ columnCode }).update({
+      await trx('columns').where({ id }).update({
         name,
         position,
       });
@@ -51,25 +91,29 @@ export default class ColumnsController {
       return response.status(201).send();
     } catch (err) {
       await trx.rollback();
-      return response.status(400).json({
-        error: 'Unexpected error while updating the column',
-      });
     }
   };
 
   deleteColumn = async (request: Request, response: Response) => {
-    const { columnCode } = request.body;
+    const { id } = request.body;
     const trx = await db.transaction();
 
+    const data = {
+      id,
+    };
+
+    const schema = Yup.object().shape({
+      id: Yup.number().required(),
+    });
+
+    await schema.validate(data, { abortEarly: false });
+
     try {
-      await trx('columns').where({ columnCode }).del();
+      await trx('columns').where({ id }).del();
       await trx.commit();
       return response.status(201).send();
     } catch (err) {
       await trx.rollback();
-      return response.status(400).json({
-        error: 'Unexpected error while deleting the column',
-      });
     }
   };
 }

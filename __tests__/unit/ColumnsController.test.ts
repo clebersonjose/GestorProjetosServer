@@ -5,18 +5,37 @@ import db from '../../src/database/connection';
 const request = supertest(app);
 
 describe("Tests from columns's controller", () => {
+  //Testes do controller de colunas
   afterEach(async () => {
     await db('columns').truncate();
+    jest.setTimeout(30000);
   });
 
-  it('Get columns', async (done) => {
+  it('Get all columns', async (done) => {
+    //Chamar todas as colunas
     const response = await request.get('/columns');
 
     expect(response.status).toBe(200);
     done();
   });
 
-  it('Create column', async (done) => {
+  it('Show a column', async (done) => {
+    //Mostrar coluna
+    const create = await request.post('/columns').send({
+      name: 'test',
+      position: 1,
+    });
+
+    const getColumn = await request.get('/columns/1');
+
+    const response = await JSON.parse(getColumn.text);
+
+    expect(response[0].name).toBe('test');
+    done();
+  });
+
+  it('Create a column', async (done) => {
+    //Criar uma coluna
     const create = await request.post('/columns').send({
       name: 'test',
       position: 1,
@@ -30,14 +49,15 @@ describe("Tests from columns's controller", () => {
     done();
   });
 
-  it('Edit column', async (done) => {
+  it('Edit a column', async (done) => {
+    //Editar uma coluna
     const create = await request.post('/columns').send({
       name: 'test',
       position: 1,
     });
 
     const edit = await request.put('/columns').send({
-      columnCode: 1,
+      id: 1,
       name: 'Otest',
       position: 1,
     });
@@ -50,20 +70,21 @@ describe("Tests from columns's controller", () => {
     done();
   });
 
-  it('Delete column', async (done) => {
+  it('Delete a column', async (done) => {
+    //Deletar uma coluna
     const create = await request.post('/columns').send({
       name: 'test',
       position: 1,
     });
 
     const del = await request.delete('/columns').send({
-      columnCode: 1
+      id: 1,
     });
 
     const getColumn = await request.get('/columns');
 
     const response = await JSON.parse(getColumn.text);
-    
+
     expect(response[0]).toBe(undefined);
     done();
   });
