@@ -1,6 +1,7 @@
 import app from '../../src/server';
 import supertest from 'supertest';
 import db from '../../src/database/connection';
+jest.setTimeout(30000);
 
 const request = supertest(app);
 
@@ -8,7 +9,6 @@ describe("Tests from tasks's controller", () => {
   //Testes do controller de tarefas
   afterEach(async () => {
     await db('tasks').truncate();
-    jest.setTimeout(30000);
   });
 
   it('Get tasks', async (done) => {
