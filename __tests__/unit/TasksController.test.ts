@@ -5,116 +5,102 @@ import db from '../../src/database/connection';
 const request = supertest(app);
 
 describe("Tests from tasks's controller", () => {
-  //Testes do controller de tarefas
-  afterEach(async () => {
-    await db('tasks').truncate();
-    jest.setTimeout(30000);
+  let token: string;
+
+  beforeAll(async (done) => {
+    await request.post('/users').send({
+      name: 'User 01',
+      email: 'user01@user.com',
+      password: 'a1234567+8',
+    });
+
+    await request
+      .post('/login')
+      .send({
+        email: 'user01@user.com',
+        password: 'a1234567+8',
+      })
+      .then((response) => {
+        token = response.body.token;
+        done();
+      });
   });
 
-  it('Get tasks', async (done) => {
-    //Chamar tarefas
-    const response = await request.get('/tasks');
+  afterAll(async (done) => {
+    await db('users').truncate();
+    done();
+  });
+
+  afterEach(async () => {
+    await db('tasks').truncate();
+  });
+
+  it('List tasks', async (done) => {
+    const response = await request
+      .get('/tasks')
+      .set('Authorization', `Bearer ${token}`);
 
     expect(response.status).toBe(200);
     done();
   });
 
   it('Show a task', async (done) => {
-    //Mostrar tarefa
-    const create = await request.post('/tasks').send({
-      columnId: 1,
-      name: 'test',
-      content: 'text',
-      position: 1,
-      priority: '3',
-      delivery: new Date(),
-      effort: '3',
-      impact: '3',
-    });
+    const response = await request
+      .get('/tasks/1')
+      .set('Authorization', `Bearer ${token}`);
 
-    const getTask = await request.get('/tasks/1');
-
-    const response = await JSON.parse(getTask.text);
-
-    expect(response[0].name).toBe('test');
+    expect(response.status).toBe(200);
     done();
   });
 
   it('Create task', async (done) => {
-    //Criar uma tarefa
-    const create = await request.post('/tasks').send({
-      columnId: 1,
-      name: 'test',
-      content: 'text',
-      position: 1,
-      priority: '3',
-      delivery: new Date(),
-      effort: '3',
-      impact: '3',
-    });
+    const response = await request
+      .post('/tasks')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        columnId: 1,
+        name: 'Task 01',
+        content: 'Task description',
+        position: 1,
+        priority: '3',
+        delivery: new Date(),
+        effort: '3',
+        impact: '3',
+      });
 
-    const getTask = await request.get('/tasks');
-
-    const response = await JSON.parse(getTask.text);
-    expect(response[0].name).toBe('test');
+    expect(response.status).toBe(201);
     done();
   });
 
   it('Edit task', async (done) => {
-    //Editar tarefa
-    const create = await request.post('/tasks').send({
-      columnId: 1,
-      name: 'test',
-      content: 'text',
-      position: 1,
-      priority: '3',
-      delivery: new Date(),
-      effort: '3',
-      impact: '3',
-    });
+    const response = await request
+      .put('/tasks')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        id: 1,
+        columnId: 1,
+        name: 'The task 01',
+        content: 'The task description',
+        position: 1,
+        priority: '3',
+        delivery: new Date(),
+        effort: '3',
+        impact: '3',
+      });
 
-    const edit = await request.put('/tasks').send({
-      id: 1,
-      columnId: 1,
-      name: 'New name',
-      content: 'text',
-      position: 1,
-      priority: '3',
-      delivery: new Date(),
-      effort: '3',
-      impact: '3',
-    });
-
-    const getTask = await request.get('/tasks');
-
-    const response = await JSON.parse(getTask.text);
-
-    expect(response[0].name).toBe('New name');
+    expect(response.status).toBe(201);
     done();
   });
 
   it('Delete task', async (done) => {
-    //Deletar tarefa
-    const create = await request.post('/tasks').send({
-      columnId: 1,
-      name: 'test',
-      content: 'text',
-      position: 1,
-      priority: '3',
-      delivery: new Date(),
-      effort: '3',
-      impact: '3',
-    });
+    const response = await request
+      .delete('/tasks')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        id: 1,
+      });
 
-    const del = await request.delete('/tasks').send({
-      id: 1,
-    });
-
-    const getTask = await request.get('/tasks');
-
-    const response = await JSON.parse(getTask.text);
-
-    expect(response[0]).toBe(undefined);
+    expect(response.status).toBe(201);
     done();
   });
 });
