@@ -2,6 +2,8 @@
 
 Back-end (API) do Projeto Integrado do cursos de Tecnologia de Analise e Desenvolvimento de Sistemas.
 
+[Documentação da API](https://www.notion.so/clebersonja/Gestor-de-Projetos-Server-f2dac3ce49db455cb8dd14e59da2d3a0)
+
 ## Passos para deploy em produção
 
 Clonar repositório:
@@ -39,6 +41,13 @@ DB_PORT=PortaDoIP
 DB_USER=UsuarioDoBanco
 DB_PASS=SenhaDoBanco
 DB_NAME=NomeDoBanco
+```
+
+## Configuração do JWT
+No arquivo .env criado anteriormente, deve adicionar a chave de secreta pra a geração dos Tokens de autenticação no campo JWT_SECRET
+
+```bash
+JWT_SECRET="Sua-Chave-Secreta"
 ```
 
 ## Testes
