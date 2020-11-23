@@ -3,23 +3,26 @@ import db from '../database/connection';
 import * as Yup from 'yup';
 import Task from '../models/Task';
 import TasksView from '../views/TasksView';
+import authMiddleware from '../utils/authMiddleware';
 
 export default class TasksController {
   index = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
+
     const tasks = await db('tasks')
-      .whereExists(function () {
-        this.select('tasks.*').from('tasks');
-      })
       .then((data) => response.status(200).json(TasksView.renderMany(data)))
       .catch(() => {
         response
           .status(400)
           .json({ error: 'Unexpected error while getting the tasks' });
       });
+
     return tasks;
   };
 
   show = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
+
     const { id } = request.params;
 
     const column = await db('tasks')
@@ -34,7 +37,9 @@ export default class TasksController {
     return column;
   };
 
-  createTask = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
+
     const {
       columnId,
       userId,
@@ -46,7 +51,6 @@ export default class TasksController {
       effort,
       impact,
     } = request.body;
-    const trx = await db.transaction();
 
     const data = {
       columnId,
@@ -74,6 +78,8 @@ export default class TasksController {
 
     await schema.validate(data, { abortEarly: false });
 
+    const trx = await db.transaction();
+
     try {
       await trx('tasks').insert({
         columnId,
@@ -94,7 +100,9 @@ export default class TasksController {
     }
   };
 
-  editTask = async (request: Request, response: Response) => {
+  edit = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
+
     const {
       id,
       columnId,
@@ -107,7 +115,6 @@ export default class TasksController {
       effort,
       impact,
     } = request.body;
-    const trx = await db.transaction();
 
     const data: Task = {
       id,
@@ -137,6 +144,8 @@ export default class TasksController {
 
     await schema.validate(data, { abortEarly: false });
 
+    const trx = await db.transaction();
+
     try {
       await trx('tasks').where({ id }).update({
         columnId,
@@ -156,10 +165,10 @@ export default class TasksController {
     }
   };
 
-  deleteTask = async (request: Request, response: Response) => {
-    const { id } = request.body;
-    const trx = await db.transaction();
+  delete = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
 
+    const { id } = request.body;
     const data = { id };
 
     const schema = Yup.object().shape({
@@ -167,6 +176,8 @@ export default class TasksController {
     });
 
     await schema.validate(data, { abortEarly: false });
+
+    const trx = await db.transaction();
 
     try {
       await trx('tasks').where({ id }).del();

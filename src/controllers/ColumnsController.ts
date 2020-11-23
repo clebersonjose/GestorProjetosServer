@@ -3,13 +3,13 @@ import db from '../database/connection';
 import * as Yup from 'yup';
 import Column from '../models/Column';
 import ColumnsView from '../views/ColumnsView';
+import authMiddleware from '../utils/authMiddleware';
 
 export default class ColumnsController {
   index = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
+
     const columns = await db('columns')
-      .whereExists(function () {
-        this.select('columns.*').from('columns');
-      })
       .then((data) => response.status(200).json(ColumnsView.renderMany(data)))
       .catch(() => {
         response
@@ -21,6 +21,7 @@ export default class ColumnsController {
   };
 
   show = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
     const { id } = request.params;
 
     const column = await db('columns')
@@ -35,9 +36,9 @@ export default class ColumnsController {
     return column;
   };
 
-  createColumn = async (request: Request, response: Response) => {
+  create = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
     const { name, position } = request.body;
-    const trx = await db.transaction();
 
     const data = {
       name,
@@ -50,6 +51,8 @@ export default class ColumnsController {
     });
 
     await schema.validate(data, { abortEarly: false });
+
+    const trx = await db.transaction();
 
     try {
       await trx('columns').insert({
@@ -64,9 +67,9 @@ export default class ColumnsController {
     }
   };
 
-  editColumn = async (request: Request, response: Response) => {
+  edit = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
     const { id, name, position } = request.body;
-    const trx = await db.transaction();
 
     const data: Column = {
       id,
@@ -82,6 +85,8 @@ export default class ColumnsController {
 
     await schema.validate(data, { abortEarly: false });
 
+    const trx = await db.transaction();
+
     try {
       await trx('columns').where({ id }).update({
         name,
@@ -94,9 +99,9 @@ export default class ColumnsController {
     }
   };
 
-  deleteColumn = async (request: Request, response: Response) => {
+  delete = async (request: Request, response: Response) => {
+    authMiddleware(request, response);
     const { id } = request.body;
-    const trx = await db.transaction();
 
     const data = {
       id,
@@ -107,6 +112,8 @@ export default class ColumnsController {
     });
 
     await schema.validate(data, { abortEarly: false });
+
+    const trx = await db.transaction();
 
     try {
       await trx('columns').where({ id }).del();
